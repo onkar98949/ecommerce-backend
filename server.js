@@ -1,6 +1,6 @@
 const express = require('express')
 const app = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 require("dotenv").config();
 const mongoose = require('mongoose')
 const registered = require('./UserSchema')
@@ -168,7 +168,7 @@ app.post('/checkout',async(req,res)=>{
 
 
 mongoose.connect(process.env.MONGODB_URL)
-    .then(() => { console.log('Db Connected'); })
+    .then(() => {console.log('Db Connected');})
     .catch((err) => { err })
 
 app.listen(port, () => {
