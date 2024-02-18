@@ -18,6 +18,15 @@ app.use(express.json());
 app.use(cookieParser());
 app.use('/uploads',express.static(__dirname+'/uploads'))
 
+app.get('/set-cookie', (req, res) => {
+    res.cookie('cookieName', 'cookieValue', {
+      sameSite: 'None',
+      secure: true,
+    });
+  
+    res.send('Cookie set successfully');
+  });
+
 app.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
