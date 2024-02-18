@@ -156,8 +156,8 @@ app.post('/checkout',async(req,res)=>{
            payment_method_types:["card"] ,
            mode:'payment',
            line_items:lineItems,
-           success_url:'http://localhost:3000/success',
-           cancel_url:'http://localhost:3000/cancel'
+           success_url:'https://effervescent-pasca-1ea9bc.netlify.app/success',
+           cancel_url:'https://effervescent-pasca-1ea9bc.netlify.app/cancel'
         })
 
         res.json({id:session.id})
