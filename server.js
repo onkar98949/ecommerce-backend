@@ -28,6 +28,7 @@ app.get('/set-cookie', (req, res) => {
     res.send('Cookie set successfully');
   });
 
+
 app.post('/register', async (req, res) => {
     try {
         const { name, email, password } = req.body;
@@ -64,9 +65,10 @@ app.post('/login', async (req, res) => {
         if (userData) {
             jwt.sign({ email, id: userData._id }, 'seceret123', {}, (err, token) => {
                 if (err) throw err;
-                res.cookie('token', token).json({
-                    id:userData._id,
-                    email
+                res.status(200).json({
+                    token,
+                    email,
+                    id:userData._id
                 })
             })
         }else{
@@ -78,8 +80,13 @@ app.post('/login', async (req, res) => {
 })
 
 app.get('/profile', (req, res) => {
-    const { token } = req.cookies;
-    jwt.verify(token, 'seceret123', {}, (err, info) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).send('Unauthorized');
+    }
+    const tokenString = token.split(' ')[1];
+    jwt.verify(tokenString, 'seceret123', {}, (err, info) => {
         if (!err) {
         res.json(info);}
     });
@@ -90,8 +97,14 @@ app.post('/logout', (req, res) => {
 })
 
 app.get('/account',(req,res)=>{
-    const { token } = req.cookies;
-    jwt.verify(token, 'seceret123', {}, async(err, info) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).send('Unauthorized');
+    }
+    const tokenString = token.split(' ')[1];
+  
+    jwt.verify(tokenString, 'seceret123', {}, async(err, info) => {
         if (err){ return res.status(401).send("Page Not Found") };
         email = info.email;
         const user = await account.findOne({email});
@@ -108,9 +121,15 @@ app.post('/personal-details', uploadMiddleware.single('file'), async (req, res) 
     const ext = parts[parts.length - 1];
     const newPath = path + '.' + ext;
     fs.renameSync(path, newPath);
-    const { token } = req.cookies;
-    jwt.verify(token, 'seceret123', {}, async(err, info) => {
-        if (err) throw err;
+
+    const token = req.headers.authorization;
+    if (!token) {
+      return res.status(401).send('Unauthorized');
+    }
+    const tokenString = token.split(' ')[1];
+    
+    jwt.verify(tokenString, 'seceret123', {}, async(err, info) => {
+        if (err) throw err ;
         email = info.email;
         const { name , phone, city ,pincode , address } = req.body
         const user_account = account({
@@ -131,8 +150,13 @@ app.put('/edit-profile',uploadMiddleware.single('file'),async(req,res)=>{
         newPath = path + '.' + ext;
         fs.renameSync(path, newPath); 
     }
-    const { token } = req.cookies;
-    jwt.verify(token, 'seceret123', {}, async(err, info) => {
+    const token = req.headers.authorization;
+
+    if (!token) {
+      return res.status(401).send('Unauthorized');
+    }
+    const tokenString = token.split(' ')[1];
+    jwt.verify(tokenString, 'seceret123', {}, async(err, info) => {
         if (err) throw err;
         const email = info.email
         const {  phone , city , pincode , address, name } = req.body
@@ -142,6 +166,7 @@ app.put('/edit-profile',uploadMiddleware.single('file'),async(req,res)=>{
         
         res.json(account_detail);
     });
+
 
 })
 
