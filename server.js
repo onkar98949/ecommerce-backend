@@ -19,7 +19,8 @@ app.use(cookieParser());
 app.use('/uploads',express.static(__dirname+'/uploads'))
 
 app.get('/set-cookie', (req, res) => {
-    res.cookie('cookieName', 'cookieValue', {
+    const { token } = req.cookies;
+    res.cookie('token', token, {
       sameSite: 'None',
       secure: true,
     });
